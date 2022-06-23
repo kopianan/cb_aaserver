@@ -30,6 +30,7 @@ dependencies:
   rust_mpc_ffi:
     git: 
       url: https://github.com/kopianan/rust_mpc_ffi 
+      ref: master
   flutter:
     sdk: flutter
 

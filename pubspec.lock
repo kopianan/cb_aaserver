@@ -188,8 +188,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: fd53be4f76d8f9356dbfbba896b23db3e19c7505
+      ref: master
+      resolved-ref: "299499ae0f89a124a50c479331b969f6d66ec40a"
       url: "https://github.com/kopianan/rust_mpc_ffi"
     source: git
     version: "0.0.1"
