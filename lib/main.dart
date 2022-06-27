@@ -1,7 +1,28 @@
+import 'dart:developer';
+
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:rust_mpc_ffi/lib.dart';
 
-void main() {
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  AwesomeNotifications().initialize('resource://drawable/notify', [
+    NotificationChannel(
+        channelKey: "basic_channel",
+        channelName: "Basic Notification",
+        importance: NotificationImportance.High,
+        channelShowBadge: true,
+        channelDescription: "Descriptions")
+  ]);
   CBRustMpc().setup();
   runApp(const MyApp());
 }
@@ -31,6 +52,46 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<dynamic>? doDkg;
+  @override
+  void initState() {
+    AwesomeNotifications().isNotificationAllowed().then(
+      (value) {
+        if (!value) {
+          AwesomeNotifications()
+              .requestPermissionToSendNotifications()
+              .then((value) => Navigator.of(context).pop());
+        }
+      },
+    );
+    FirebaseMessaging.instance
+        .getToken()
+        .then((value) => log(value.toString()));
+    FirebaseMessaging.instance
+        .subscribeToTopic("dkg")
+        .then((value) => print("SUBSCRIBE TO DKG TOPIC"));
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        createNotification();
+        Future.delayed(Duration(seconds: 2)).then((e) {
+          CBRustMpc().proccessDkgString(3).then((value) => print(value));
+        });
+        setState(() {});
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
+    super.initState();
+  }
+
+  void createNotification() async {
+    await AwesomeNotifications().createNotification(
+      content: NotificationContent(
+          id: DateTime.now().millisecondsSinceEpoch.remainder(1),
+          channelKey: 'basic_channel',
+          body: "TEST"),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

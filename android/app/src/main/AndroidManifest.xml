@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.coinbit_as_a_server">
+        <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
    <application
         android:label="coinbit_as_a_server"
         android:name="${applicationName}"
