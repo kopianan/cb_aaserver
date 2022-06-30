@@ -71,13 +71,14 @@ class _MyHomePageState extends State<MyHomePage> {
         .then((value) => print("SUBSCRIBE TO DKG TOPIC"));
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.notification != null) {
+      if (message.data != null) {
         createNotification();
-        Future.delayed(Duration(seconds: 2)).then((e) {
-          CBRustMpc().proccessDkgString(3).then((value) => print(value));
-        });
-        setState(() {});
-        print('Message also contained a notification: ${message.notification}');
+        if (message.data['topics'] == "dkg") {
+          print("DKG"); 
+          Future.delayed(Duration(seconds: 2)).then((e) {
+            // CBRustMpc().proccessDkgString(3).then((value) => print(value));
+          });
+        }
       }
     });
     super.initState();
